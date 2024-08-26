@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from module.TansformerEncoderWithPair import TransformerEncoderWithPair
+from module.transformer.TansformerEncoderWithPair import TransformerEncoderWithPair
 from module.data.Dictionary import Dictionary
 import argparse
 import os

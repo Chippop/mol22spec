@@ -5,7 +5,7 @@ import torch
 import numpy as np
 from module.PeaksPositionalEncode import PeaksPositionalEncode
 class _TransformerEncode(nn.Module):
-    def __init__(self, input_dim, embd_dim, ff_dim, num_head, num_layer) -> None:
+    def __init__(self, input_dim, embd_dim, ff_dim, num_head, num_layer,output_dim) -> None:
         super(_TransformerEncode,self).__init__()
         self.peak_mlp = nn.Sequential(
             nn.Linear(1, embd_dim >> 1),
@@ -20,12 +20,15 @@ class _TransformerEncode(nn.Module):
         self.fc = nn.Sequential(
             nn.Linear(embd_dim, embd_dim),
             nn.ReLU(),
-            nn.Linear(embd_dim, 128)
+            nn.Linear(embd_dim, output_dim)
         )
 
     def forward(self,peak_input):
         if isinstance(peak_input, np.ndarray):
-            peak_input = torch.tensor(peak_input, dtype=torch.float32)
+            peak_input = torch.tensor(peak_input, dtype=torch.float32).to(device="cuda")
+        
+        if (peak_input.dim()) != 3:
+            peak_input = peak_input.unsqueeze(0)
         peak_x = peak_input[:,:, 0:1]
         intensity = peak_input[:,:, 1:2]
 

@@ -1,6 +1,6 @@
 from typing import Optional
 import torch.nn as nn
-from module.TransformerEncoderLayer import TransformerEncoderLayer
+from module.transformer.TransformerEncoderLayer import TransformerEncoderLayer
 import torch
 import torch.nn.functional as F
 class TransformerEncoderWithPair(nn.Module):

@@ -35,34 +35,34 @@ logger = logging.getLogger()
 
 
 def inner_smi2coords(smi, mode='fast', remove_hs=True):
-        try:
-            mol = Chem.MolFromSmiles(smi)
-            if mol is None:  # Check if RDKit was able to parse the SMILES string
-                return None, None
-            mol = AllChem.AddHs(mol)
-            atoms = [atom.GetSymbol() for atom in mol.GetAtoms()]
-            if len(atoms) == 0:
-                return None, None
-            res = AllChem.EmbedMolecule(mol, randomSeed=24)
-            if res == 0 or (res == -1 and mode == 'heavy'):
-                try:
-                    AllChem.MMFFOptimizeMolecule(mol)
-                except:
-                    pass
-                coordinates = mol.GetConformer().GetPositions().astype(np.float32)
-            else:
-                AllChem.Compute2DCoords(mol)
-                coordinates = mol.GetConformer().GetPositions().astype(np.float32)
-
-            if remove_hs:
-                idx = [i for i, atom in enumerate(atoms) if atom != 'H']
-                atoms = [atom for i, atom in enumerate(atoms) if i in idx]
-                coordinates = coordinates[idx]
-
-            return atoms, coordinates
-        except Exception as e:
-            logger.error(f"Failed to process SMILES: {smi} with error: {e}")
+    try:
+        mol = Chem.MolFromSmiles(smi)
+        if mol is None:  # Check if RDKit was able to parse the SMILES string
             return None, None
+        mol = AllChem.AddHs(mol)
+        atoms = [atom.GetSymbol() for atom in mol.GetAtoms()]
+        if len(atoms) == 0:
+            return None, None
+        res = AllChem.EmbedMolecule(mol, randomSeed=24)
+        if res == 0 or (res == -1 and mode == 'heavy'):
+            try:
+                AllChem.MMFFOptimizeMolecule(mol)
+            except:
+                pass
+            coordinates = mol.GetConformer().GetPositions().astype(np.float32)
+        else:
+            AllChem.Compute2DCoords(mol)
+            coordinates = mol.GetConformer().GetPositions().astype(np.float32)
+
+        if remove_hs:
+            idx = [i for i, atom in enumerate(atoms) if atom != 'H']
+            atoms = [atom for i, atom in enumerate(atoms) if i in idx]
+            coordinates = coordinates[idx]
+
+        return atoms, coordinates
+    except Exception as e:
+        logger.error(f"Failed to process SMILES: {smi} with error: {e}")
+        return None, None
 
 def xyz2smi(atoms, coords):
     mol = openbabel.OBMol()
